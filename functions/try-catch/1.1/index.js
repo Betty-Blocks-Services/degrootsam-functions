@@ -1,6 +1,7 @@
 const tryCatch = async ({ errorMessage, logging }, steps) => {
   try {
     const result = await steps();
+    console.log(result);
     return {
       result,
     };

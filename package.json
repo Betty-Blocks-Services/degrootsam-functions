@@ -1,8 +1,13 @@
 {
   "name": "app-functions",
   "version": "1.0.0",
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "@betty-blocks/cli": "26.0",
+    "lodash": "^4.17.15",
+    "vitest": "^3.2.4"
   },
   "private": "true"
 }
