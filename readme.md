@@ -2,11 +2,11 @@
 
 The try...catch statement marks a block of steps to try, and specifies a response, should an exception be thrown.
 
-![Example usage](../../../public/example_usage.jpg)
+![Example usage](./public/example_usage.jpg)
 
 ## Options
 
-![Options Preview](../../../public/options_preview.jpg)
+![Options Preview](./public/options_preview.jpg)
 
 ### Custom Error Message
 
