@@ -14,7 +14,10 @@ const arrayPush = async ({
   logging = false,
 }) => {
   try {
-    let result = array && "data" in array ? array.data : array || [];
+    let result =
+      typeof array === "object" && array && "data" in array
+        ? array.data
+        : array || [];
     if (!Array.isArray(result)) throw new Error("data is not an array");
     if (path) {
       if (logging) console.log("path", path);

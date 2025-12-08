@@ -1,0 +1,152 @@
+import { describe, it, expect, vi, afterEach } from "vitest";
+import arrayFilter from "../../functions/array-filter/1.0/index.js";
+
+describe("arrayFilter", () => {
+  const originalConsoleLog = console.log;
+
+  afterEach(() => {
+    console.log = originalConsoleLog;
+  });
+
+  it("filters array with equality operator", async () => {
+    const out = await arrayFilter({
+      array: [1, 2, 3, 4, 5],
+      value: 3,
+      operator: "eq",
+    });
+
+    expect(out).toEqual({ result: [3] });
+  });
+
+  it("filters array with greater than operator", async () => {
+    const out = await arrayFilter({
+      array: [1, 2, 3, 4, 5],
+      value: 3,
+      operator: "gt",
+    });
+
+    expect(out).toEqual({ result: [4, 5] });
+  });
+
+  it("filters array with contains operator on strings", async () => {
+    const out = await arrayFilter({
+      array: ["apple", "banana", "cherry", "date"],
+      value: "an",
+      operator: "cont",
+    });
+
+    expect(out).toEqual({ result: ["banana"] });
+  });
+
+  it("filters array with path and operator", async () => {
+    const array = [
+      { name: "Alice", age: 25 },
+      { name: "Bob", age: 30 },
+      { name: "Charlie", age: 35 },
+    ];
+
+    const out = await arrayFilter({
+      array,
+      path: "age",
+      value: 30,
+      operator: "eq",
+    });
+
+    expect(out).toEqual({ result: [{ name: "Bob", age: 30 }] });
+  });
+
+  it("filters array with nested path", async () => {
+    const array = [
+      { user: { name: "Alice", age: 25 } },
+      { user: { name: "Bob", age: 30 } },
+      { user: { name: "Charlie", age: 35 } },
+    ];
+
+    const out = await arrayFilter({
+      array,
+      path: "user.age",
+      value: 30,
+      operator: "eq",
+    });
+
+    expect(out).toEqual({ result: [{ user: { name: "Bob", age: 30 } }] });
+  });
+
+  it("filters array with not equal operator", async () => {
+    const out = await arrayFilter({
+      array: [1, 2, 3, 4, 5],
+      value: 3,
+      operator: "ne",
+    });
+
+    expect(out).toEqual({ result: [1, 2, 4, 5] });
+  });
+
+  it("filters array with less than or equal operator", async () => {
+    const out = await arrayFilter({
+      array: [1, 2, 3, 4, 5],
+      value: 3,
+      operator: "lte",
+    });
+
+    expect(out).toEqual({ result: [1, 2, 3] });
+  });
+
+  it("filters array with not contains operator", async () => {
+    const out = await arrayFilter({
+      array: ["apple", "banana", "cherry", "date"],
+      value: "an",
+      operator: "ncont",
+    });
+
+    expect(out).toEqual({ result: ["apple", "cherry", "date"] });
+  });
+
+  it("handles date comparison with valueIsDate flag", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const array = ["2023-01-01", "2023-06-01", "2023-12-01"];
+
+    const out = await arrayFilter({
+      array,
+      value: "2023-06-01",
+      operator: "gt",
+      valueIsDate: true,
+    });
+
+    expect(out.result).toHaveLength(1);
+    expect(logSpy).toHaveBeenCalledWith(new Date("2023-12-01"));
+  });
+
+  it("throws error when array is missing", async () => {
+    await expect(arrayFilter({ value: 3, operator: "eq" })).rejects.toThrow(
+      "Array Filter: Missing required parameters to filter array",
+    );
+  });
+
+  it("throws error when operator is missing", async () => {
+    await expect(arrayFilter({ array: [1, 2, 3], value: 3 })).rejects.toThrow(
+      "Array Filter: Missing required parameters to filter array",
+    );
+  });
+
+  it("throws error when operator is invalid", async () => {
+    await expect(
+      arrayFilter({ array: [1, 2, 3], value: 3, operator: "invalid" }),
+    ).rejects.toThrow("Invalid operator");
+  });
+
+  it("logs parameters when error occurs", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    try {
+      await arrayFilter({ array: [1, 2, 3], value: 3 });
+    } catch (err) {
+      // Expected to throw
+    }
+
+    expect(logSpy).toHaveBeenCalledWith({
+      array: [1, 2, 3],
+      operator: undefined,
+    });
+  });
+});

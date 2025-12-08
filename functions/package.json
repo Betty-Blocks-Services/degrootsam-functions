@@ -2,7 +2,8 @@
   "name": "app-functions",
   "version": "1.0.0",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "publish": "bb blocks publish"
   },
   "dependencies": {
     "@betty-blocks/cli": "26.0"

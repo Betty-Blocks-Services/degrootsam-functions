@@ -9,7 +9,7 @@ const travelPath = (object, path) => {
 };
 const arrayFilter = async ({ array, path, value, operator, valueIsDate }) => {
   if (!array || !operator) {
-    console.log({ array, path, operator });
+    console.log({ array, operator });
     throw new Error(
       "Array Filter: Missing required parameters to filter array",
     );

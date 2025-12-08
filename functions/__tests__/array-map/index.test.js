@@ -1,0 +1,209 @@
+import { describe, it, expect } from "vitest";
+import mapArray from "../../functions/array-map/1.0/index.js";
+
+describe("mapArray", () => {
+  it("maps array with simple path", async () => {
+    const array = {
+      data: [
+        { name: "Alice", age: 25 },
+        { name: "Bob", age: 30 },
+        { name: "Charlie", age: 35 },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "name",
+    });
+
+    expect(out).toEqual({ result: ["Alice", "Bob", "Charlie"] });
+  });
+
+  it("maps array with nested path", async () => {
+    const array = {
+      data: [
+        { user: { name: "Alice", age: 25 } },
+        { user: { name: "Bob", age: 30 } },
+        { user: { name: "Charlie", age: 35 } },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "user.name",
+    });
+
+    expect(out).toEqual({ result: ["Alice", "Bob", "Charlie"] });
+  });
+
+  it("maps array with numeric values", async () => {
+    const array = {
+      data: [
+        { name: "Alice", age: 25 },
+        { name: "Bob", age: 30 },
+        { name: "Charlie", age: 35 },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "age",
+    });
+
+    expect(out).toEqual({ result: [25, 30, 35] });
+  });
+
+  it("maps array with boolean values", async () => {
+    const array = {
+      data: [
+        { name: "Alice", active: true },
+        { name: "Bob", active: false },
+        { name: "Charlie", active: true },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "active",
+    });
+
+    expect(out).toEqual({ result: [true, false, true] });
+  });
+
+  it("maps array with mixed value types", async () => {
+    const array = {
+      data: [
+        { name: "Alice", score: 95, passed: true },
+        { name: "Bob", score: 87, passed: true },
+        { name: "Charlie", score: 72, passed: false },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "score",
+    });
+
+    expect(out).toEqual({ result: [95, 87, 72] });
+  });
+
+  it("maps array with deeply nested path", async () => {
+    const array = {
+      data: [
+        { user: { profile: { settings: { theme: "dark" } } } },
+        { user: { profile: { settings: { theme: "light" } } } },
+        { user: { profile: { settings: { theme: "dark" } } } },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "user.profile.settings.theme",
+    });
+
+    expect(out).toEqual({ result: ["dark", "light", "dark"] });
+  });
+
+  it("maps array with null values", async () => {
+    const array = {
+      data: [
+        { name: "Alice", age: 25 },
+        { name: "Bob", age: null },
+        { name: "Charlie", age: 35 },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "age",
+    });
+
+    expect(out).toEqual({ result: [25, null, 35] });
+  });
+
+  it("maps array with undefined values", async () => {
+    const array = {
+      data: [
+        { name: "Alice", age: 25 },
+        { name: "Bob", age: undefined },
+        { name: "Charlie", age: 35 },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "age",
+    });
+
+    expect(out).toEqual({ result: [25, undefined, 35] });
+  });
+
+  it("maps empty array", async () => {
+    const array = { data: [] };
+
+    const out = await mapArray({
+      array,
+      path: "name",
+    });
+
+    expect(out).toEqual({ result: [] });
+  });
+
+  it("maps single element array", async () => {
+    const array = {
+      data: [{ name: "Alice", age: 25 }],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "name",
+    });
+
+    expect(out).toEqual({ result: ["Alice"] });
+  });
+
+  it("throws error when array item is not an object and path contains dot", async () => {
+    const array = { data: ["string", 123, true] };
+
+    await expect(
+      mapArray({
+        array,
+        path: "user.name",
+      }),
+    ).rejects.toThrow("Array item is not an object. Cannot travel path");
+  });
+
+  it("handles path that doesn't exist on some objects", async () => {
+    const array = {
+      data: [
+        { name: "Alice", age: 25 },
+        { name: "Bob" },
+        { name: "Charlie", age: 35 },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "age",
+    });
+
+    expect(out).toEqual({ result: [25, undefined, 35] });
+  });
+
+  it("handles path that returns undefined", async () => {
+    const array = {
+      data: [
+        { name: "Alice", age: 25 },
+        { name: "Bob", age: 30 },
+        { name: "Charlie", age: 35 },
+      ],
+    };
+
+    const out = await mapArray({
+      array,
+      path: "nonexistent",
+    });
+
+    expect(out).toEqual({ result: [undefined, undefined, undefined] });
+  });
+});
