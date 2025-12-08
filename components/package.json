@@ -4,6 +4,11 @@
   "main": "dist/templates.json",
   "license": "UNLICENSED",
   "private": true,
+  "dependencies": {
+    "@betty-blocks/component-sdk": "^1.86.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "devDependencies": {
     "@betty-blocks/cli": "^25.108.0",
     "@betty-blocks/component-sdk": "^1.91.3",
