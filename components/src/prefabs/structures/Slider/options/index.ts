@@ -17,13 +17,14 @@ const thumb: Array<keyof typeof sliderOptions> = [
   'thumbHeight',
   'thumbBorderRadius',
   'thumbColor',
-  'thumbShowBorder',
+  'thumbBorder',
   'thumbBorderColor',
   'thumbBorderPlacement',
   'thumbBorderHeight',
 ];
 
 const track: Array<keyof typeof sliderOptions> = [
+  'trackWidth',
   'trackHeight',
   'trackBorder',
   'trackBorderColor',
@@ -57,7 +58,7 @@ export const sliderOptions = {
       condition: showIf('property', 'EQ', ''),
     },
   }),
-  showLabel: toggle('Show Label', { value: true }),
+  showLabel: toggle('Show label', { value: true }),
   label: variable('Label', {
     value: [''],
     configuration: {
@@ -67,10 +68,12 @@ export const sliderOptions = {
   labelSize: font('Labelsize', {
     value: 'Body1',
   }),
+  showInputField: toggle('Show input field', { value: true }),
   showMinMaxValue: toggle('Show min/max value', { value: true }),
   defaultValue: variable('Default value', { value: ['0'] }),
   minValue: variable('Min value', { value: ['0'] }),
   maxValue: variable('Max value', { value: ['100'] }),
+  stepSize: variable('Step size', { value: ['1'] }),
 
   // Thumb options
   thumbColor: color('Thumb Color', { value: ThemeColor.PRIMARY }),
@@ -96,7 +99,7 @@ export const sliderOptions = {
     },
   }),
 
-  thumbShowBorder: toggle('Thumb Border', { value: true }),
+  thumbBorder: toggle('Show thumb border', { value: true }),
 
   thumbBorderColor: color('Thumb Border Color', {
     value: ThemeColor.PRIMARY,
@@ -131,40 +134,31 @@ export const sliderOptions = {
   // Start Track Options
   progressColor: color('Progress Color', { value: ThemeColor.PRIMARY }),
 
-  trackHeight: option('CUSTOM', {
-    label: 'Track Height',
-    value: '3px',
-    configuration: {
-      as: 'UNIT',
-    },
-  }),
-
-  trackWidth: option('CUSTOM', {
-    label: 'Track Width',
+  trackWidth: size('Track width', {
     value: '100%',
     configuration: {
       as: 'UNIT',
     },
   }),
-
+  trackHeight: size('Track height', {
+    value: '3px',
+    configuration: {
+      as: 'UNIT',
+    },
+  }),
   trackBackground: color('Track Background', {
     value: ThemeColor.ACCENT_1,
   }),
-
-  trackBorder: option('CUSTOM', {
-    label: 'Track border',
+  trackBorder: size('Track border', {
     value: '0px',
     configuration: {
       as: 'UNIT',
     },
   }),
-
   trackBorderColor: color('Track Border Color', {
     value: ThemeColor.TRANSPARENT,
   }),
-
-  trackBorderRadius: option('CUSTOM', {
-    label: 'Track Border Radius',
+  trackBorderRadius: size('Track border radius', {
     value: '0px',
     configuration: {
       as: 'UNIT',

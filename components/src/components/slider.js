@@ -13,36 +13,64 @@
       label,
       labelSize,
       showLabel,
+      showInputField,
+      stepSize,
+      thumbWidth,
+      thumbBorderHeight,
     } = options;
     const { env, useText } = B;
     const isDev = env === 'dev';
-    const { Typography, Grid, TextField } = window.MaterialUI.Core;
+    const { Typography, Grid, TextField, Tooltip } = window.MaterialUI.Core;
     const min = parseInt(useText(minValue), 10) || 0;
     const max = parseInt(useText(maxValue), 10) || 100;
     const parseDefaultValue =
       parseInt(useText(defaultValue), 10) || (env === 'dev' ? 50 : 0);
 
     const [currentValue, setCurrentValue] = useState(parseDefaultValue);
-
+    const [showNumberField, setShowNumberField] = useState(showInputField);
     const inputRef = React.createRef(null);
+    const [trackWidthPx, setTrackWidthPx] = useState(0);
+    const thumbWidthPx = parseInt(thumbWidth, 10) || 16;
+    const thumbBorderHeightPx = parseInt(thumbBorderHeight, 10) || 0;
+    const [tooltipPosition, setTooltipPosition] = useState(0);
 
-    const [showNumberField, setShowNumberField] = useState(true);
+    const calculateTooltipPosition = (value, trackWidth) => {
+      if (trackWidth === 0) return 0;
+      const range = max - min;
+      const ratio = (value - min) / range;
+
+      const thumbSize = thumbWidthPx + 2 * thumbBorderHeightPx;
+      const thumbCenterPx = ratio * (trackWidth - thumbSize) + thumbSize / 2;
+
+      const percentagePosition = (thumbCenterPx / trackWidth) * 100;
+      return percentagePosition;
+    };
 
     const handleWindowResize = () => {
       if (window.innerWidth <= 600) {
         setShowNumberField(false);
       } else {
-        setShowNumberField(true);
+        setShowNumberField(showInputField);
+      }
+
+      if (inputRef.current) {
+        setTrackWidthPx(inputRef.current.offsetWidth);
       }
     };
     useEffect(() => {
       window.addEventListener('resize', handleWindowResize);
 
       return () => window.removeEventListener('resize', handleWindowResize);
-    }, [window.innerWidth]);
+    }, []);
 
     useEffect(() => {
       if (!inputRef.current || isDev) return;
+
+      const currentTrackWidth = inputRef.current.offsetWidth;
+      if (trackWidthPx !== currentTrackWidth) {
+        setTrackWidthPx(currentTrackWidth);
+      }
+
       inputRef.current.style.setProperty('--value', inputRef.current.value);
       inputRef.current.style.setProperty(
         '--min',
@@ -55,40 +83,44 @@
       inputRef.current.addEventListener('input', (e) =>
         e.currentTarget.style.setProperty('--value', e.currentTarget.value),
       );
-    }, [currentValue]);
+      const newPosition = calculateTooltipPosition(
+        currentValue,
+        currentTrackWidth,
+      );
+      setTooltipPosition(newPosition);
+    }, [currentValue, trackWidthPx]);
 
     const handleSetValue = (value) => {
       const stringValue = value.toString();
       if (!/[0-9]/g.test(stringValue)) {
         return;
       }
-      if (value > 100) {
-        setCurrentValue(100);
-      } else if (value < 0) {
-        setCurrentValue(0);
-      } else {
-        setCurrentValue(value);
-      }
+      setCurrentValue(value);
     };
 
     const handleSliderBlur = (event) => {
       const { value } = event.target;
       handleSetValue(value);
+      B.triggerEvent('onBlur', value);
     };
 
     const handleSliderChange = (event) => {
       const { value } = event.target;
-      handleSetValue(value);
+      const newValue = parseInt(value, 10);
+      handleSetValue(newValue);
+      setTooltipPosition(calculateTooltipPosition(newValue, trackWidthPx));
     };
 
     const handleInputChange = (event) => {
       const { value } = event.target;
       handleSetValue(value);
+      B.triggerEvent('onChange', value);
     };
 
     const handleInputBlur = (event) => {
       const { value } = event.target;
       handleSetValue(value);
+      B.triggerEvent('onBlur', value);
     };
 
     return (
@@ -96,20 +128,44 @@
         <input type="hidden" value={currentValue} name={actionVariableId} />
         {showLabel && <Typography variant={labelSize}>{label}</Typography>}
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={8} xl={10}>
+          <Grid
+            item
+            xs={12}
+            sm={showNumberField ? 8 : 12}
+            xl={showNumberField ? 10 : 12}
+          >
             <div className={classes.field}>
               {showMinMaxValue && <p>{min}</p>}
-              <input
-                className={[classes.input, 'slider-progress'].join(' ')}
-                type="range"
-                min={min}
-                max={max}
-                value={currentValue}
-                step={1}
-                onChange={handleSliderChange}
-                onBlur={handleSliderBlur}
-                ref={inputRef}
-              />
+              <div className={classes.sliderContainer}>
+                <Tooltip
+                  title={currentValue}
+                  placement="top"
+                  open={!showInputField}
+                  arrow
+                  classes={{
+                    tooltip: classes.customTooltip,
+                    arrow: classes.customArrow,
+                  }}
+                >
+                  <span
+                    style={{ left: `${tooltipPosition}%` }}
+                    className={classes.tooltipDummy}
+                  >
+                    {/* Dummy span acts as the anchor for the Tooltip */}
+                  </span>
+                </Tooltip>
+                <input
+                  className={[classes.input, 'slider-progress'].join(' ')}
+                  type="range"
+                  min={min}
+                  max={max}
+                  value={currentValue}
+                  step={stepSize}
+                  onChange={handleSliderChange}
+                  onBlur={handleSliderBlur}
+                  ref={inputRef}
+                />
+              </div>
               {showMinMaxValue && <p>{max}</p>}
             </div>
           </Grid>
@@ -137,6 +193,23 @@
         width: '100%',
         margin: '0.5rem 0 0.5rem 0',
       },
+      sliderContainer: {
+        position: 'relative',
+        flexGrow: 1,
+      },
+      tooltipDummy: {
+        position: 'absolute',
+        transform: 'translateX(calc(-50% + 1px))',
+        top: ({ options: { thumbBorderHeight } }) =>
+          `${10 - parseInt(thumbBorderHeight, 10)}px`,
+      },
+      customTooltip: {
+        backgroundColor: style.getColor('Black'),
+        fontSize: '0.875rem',
+      },
+      customArrow: {
+        color: style.getColor('Black'),
+      },
       sliderValue: {
         position: 'relative',
         width: '100%',
@@ -157,6 +230,7 @@
       },
       input: {
         '-webkit-appearance': 'none',
+        position: 'relative',
         width: ({ options: { trackWidth } }) => trackWidth,
         height: ({ options: { trackHeight } }) => trackHeight,
         background: ({ options: { trackBackground } }) =>
