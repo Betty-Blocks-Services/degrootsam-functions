@@ -1,0 +1,69 @@
+{
+  "description": "Description",
+  "label": "Array Combine",
+  "category": "Array",
+  "icon": {
+    "name": "ActionsIcon",
+    "color": "Blue"
+  },
+  "options": [
+    {
+      "name": "arrayA",
+      "label": "Array A",
+      "meta": {
+        "type": "Value",
+        "allowedKinds": ["ARRAY", "COLLECTION"],
+        "validations": {
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "pathA",
+      "label": "Path A",
+      "meta": {
+        "type": "Text",
+        "placeholder": "id"
+      }
+    },
+    {
+      "name": "arrayB",
+      "label": "Array B",
+      "meta": {
+        "type": "Value",
+        "allowedKinds": ["ARRAY", "COLLECTION"],
+        "validations": { "required": true }
+      }
+    },
+
+    {
+      "name": "pathB",
+      "label": "Path B",
+      "meta": {
+        "type": "Text",
+        "placeholder": "id"
+      }
+    },
+    {
+      "name": "schema",
+      "label": "Schema Model",
+      "meta": {
+        "type": "SchemaModel"
+      }
+    },
+    {
+      "name": "result",
+      "label": "Output",
+      "meta": {
+        "type": "Output",
+        "output": {
+          "schemaModel": "schema",
+          "dataType": "SCHEMA",
+          "type": "Array"
+        }
+      }
+    }
+  ],
+
+  "yields": "NONE"
+}
