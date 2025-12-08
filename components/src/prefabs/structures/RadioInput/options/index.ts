@@ -21,6 +21,7 @@ export const options = {
     value: '',
     configuration: {
       condition: showIf('property', 'EQ', ''),
+      allowedKinds: ['STRING', 'NUMBER'],
     },
   }),
   property: property('Property', {

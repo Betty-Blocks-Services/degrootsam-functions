@@ -315,12 +315,12 @@
         return <span>{message}</span>;
       }
 
-      if (isDev && !isListProperty && !isObjectProperty)
-        return renderRadio('value', 'Placeholder');
-
       if (optionType === 'manual') {
         return parsedManualValues.map((item) => renderRadio(item, item));
       }
+
+      if (isDev && !isListProperty && !isObjectProperty)
+        return renderRadio('value', 'Placeholder');
 
       if (isObjectProperty) {
         return allowedValues.map((item) =>
