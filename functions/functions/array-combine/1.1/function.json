@@ -51,7 +51,12 @@
         "type": "SchemaModel"
       }
     },
-
+    {
+      "name": "model",
+      "label": "Model for output",
+      "meta": { "type": "Model" },
+      "info": "Use this if you want to type the output to a model"
+    },
     {
       "name": "result",
       "label": "Output",
@@ -62,6 +67,14 @@
           "dataType": "SCHEMA",
           "type": "Array"
         }
+      }
+    },
+    {
+      "name": "resultModel",
+      "label": "Output: Model",
+      "meta": {
+        "type": "Output",
+        "output": { "type": "Collection", "model": "model" }
       }
     }
   ],

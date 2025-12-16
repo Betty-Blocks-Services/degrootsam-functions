@@ -1,15 +1,15 @@
 {
   "dependencies": [],
   "functions": [
-    "arrayCombine 1.0",
+    "arrayCombine 1.1",
     "arrayCount 1.0",
     "arrayFilter 1.0",
-    "arrayFind 1.0",
-    "arrayJoin 1.0",
+    "arrayFind 1.1",
+    "arrayJoin 1.1",
     "arrayMap 1.0",
     "arrayPush 1.0",
-    "arrayReduce 1.0",
-    "arraySplit 1.0"
+    "arrayReduce 1.1",
+    "arraySplit 1.1"
   ],
   "includes": []
 }
